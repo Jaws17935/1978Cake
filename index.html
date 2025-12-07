@@ -119,13 +119,16 @@
     </div>
 
     <script>
-        // 1. 商品資料庫 (您可以直接在這裡修改商品)
+        // 1. 商品資料庫 (已更新為 六月六 風格產品)
         const products = [
-            { id: 1, name: "草莓鮮奶油蛋糕", price: 850, img: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" },
-            { id: 2, name: "法式馬卡龍 (6入)", price: 480, img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" },
-            { id: 3, name: "巧克力布朗尼", price: 320, img: "https://images.unsplash.com/photo-1607920591413-4ec007e70023?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" },
-            { id: 4, name: "經典法式檸檬塔", price: 150, img: "https://images.unsplash.com/photo-1519915028121-7d3463d20b13?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" },
-            { id: 5, name: "手工餅乾禮盒", price: 600, img: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" }
+            { id: 1, name: "晨光果香・香緻櫻桃蛋糕 (6吋)", price: 950, img: "https://images.unsplash.com/photo-1579306194872-64d3b7bac4c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" },
+            { id: 2, name: "晨光果香・靜藍果香藍莓蛋糕 (6吋)", price: 980, img: "https://images.unsplash.com/photo-1517427677506-ade074eb1432?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" },
+            { id: 3, name: "晨光果香・橙香蛋糕 (6吋)", price: 920, img: "https://images.unsplash.com/photo-1562760268-d050529d846b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" },
+            { id: 4, name: "輕柔如雲・輕乳酪蛋糕 (6吋)", price: 350, img: "https://images.unsplash.com/photo-1621257916999-562725514f04?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" },
+            { id: 5, name: "一層一層的茶韻・伯爵千層蛋糕 (8吋)", price: 1176, img: "https://images.unsplash.com/photo-1629892997103-6052847c5d0e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" },
+            { id: 6, name: "一層一層的醇香・蒙布朗栗子千層 (8吋)", price: 1230, img: "https://images.unsplash.com/photo-1505976378723-9726b54e9bb9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" },
+            { id: 7, name: "融化一刻・柔糖布丁 (單個)", price: 45, img: "https://images.unsplash.com/photo-1534432586043-ead5b99229fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" },
+            { id: 8, name: "一層一層的溫柔・海鹽焦糖千層 (8吋)", price: 1176, img: "https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" }
         ];
 
         // 2. 初始化購物車 (從 LocalStorage 讀取)
@@ -133,7 +136,14 @@
         let cart = JSON.parse(localStorage.getItem('myDessertCart')) || [];
 
         // 簡單的資料遷移：如果舊資料沒有 quantity，則初始化為 1，並合併重複項目
-        if (cart.length > 0 && !cart[0].quantity) {
+        // 如果舊資料的 ID 已經不存在於新產品列表中（例如之前的產品 ID 1-5），建議清空購物車以免出錯
+        const validIds = products.map(p => p.id);
+        const hasInvalidItems = cart.some(item => !validIds.includes(item.id));
+        
+        if (hasInvalidItems) {
+            cart = []; // 清空舊版不相容的購物車資料
+            localStorage.setItem('myDessertCart', JSON.stringify(cart));
+        } else if (cart.length > 0 && !cart[0].quantity) {
             const newCart = [];
             const counts = {};
             cart.forEach(item => {
