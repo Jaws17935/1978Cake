@@ -71,17 +71,17 @@
             display: inline-block;
         }
         
-        /* 裝飾線條 */
-        .hero p::before, .hero p::after {
+        /* 裝飾線條 - 修改為僅顯示在後方 */
+        .hero p::after {
             content: '';
             position: absolute;
             top: 50%;
-            width: 40px;
+            right: -60px;
+            width: 50px;
             height: 1px;
             background: white;
         }
-        .hero p::before { left: -50px; }
-        .hero p::after { right: -50px; }
+        /* .hero p::before { left: -50px; }  <-- 移除前面的線 */
 
         .cta-button { 
             background-color: var(--primary-color); 
