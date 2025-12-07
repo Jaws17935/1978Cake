@@ -228,11 +228,10 @@
             message += `\n總金額：NT$ ${total}`;
             message += `\n\n(請在此留下您的收件人姓名、電話與地址)`;
 
-            // 這裡請填入您的 LINE ID 或直接使用 LINE 官方帳號連結
-            // 使用 LINE URL Scheme 分享文字
-            const lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(message)}`;
+            // 使用 LINE 官方帳號連結 - 直接傳送訊息到官方帳號
+            const lineUrl = `https://lin.ee/GYORgS6?text=${encodeURIComponent(message)}`;
             
-            // 開啟新視窗跳轉到 LINE
+            // 開啟新視窗跳轉到 LINE 官方帳號
             window.open(lineUrl, '_blank');
             
             // (選擇性) 清空購物車
