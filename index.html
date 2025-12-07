@@ -211,7 +211,7 @@
             }
 
             // 整理訂單內容
-            let message = "您好，我想訂購以下甜點：\n";
+            let message = "您好，我想訂購以下甜點：\n\n";
             let total = 0;
             
             // 簡單統計數量
@@ -228,11 +228,22 @@
             message += `\n總金額：NT$ ${total}`;
             message += `\n\n(請在此留下您的收件人姓名、電話與地址)`;
 
-            // 使用 LINE 官方帳號連結 - 直接傳送訊息到官方帳號
-            const lineUrl = `https://lin.ee/GYORgS6?text=${encodeURIComponent(message)}`;
+            // 將訊息複製到剪貼簿
+            navigator.clipboard.writeText(message).then(() => {
+                alert('✅ 訂單內容已複製！\n\n即將開啟 LINE 官方帳號\n請在聊天室中貼上訊息並送出');
+            }).catch(() => {
+                // 如果複製失敗，顯示訊息讓用戶手動複製
+                prompt('請複製以下訂單內容，並在 LINE 中傳送給我們：', message);
+            });
+
+            // 使用 LINE 官方帳號連結
+            // 在手機上會直接開啟 LINE app，在電腦上會開啟 LINE 網頁版
+            const lineUrl = `https://lin.ee/GYORgS6`;
             
-            // 開啟新視窗跳轉到 LINE 官方帳號
-            window.open(lineUrl, '_blank');
+            // 延遲開啟，確保剪貼簿操作完成
+            setTimeout(() => {
+                window.open(lineUrl, '_blank');
+            }, 500);
             
             // (選擇性) 清空購物車
             // cart = [];
