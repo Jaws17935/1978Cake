@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sweet Dreams 甜夢工坊 | 手作甜點專賣</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* --- CSS 樣式 (維持原本設計，新增 Modal 樣式) --- */
+        :root {
+            --primary-color: #d4a373;
+            --accent-color: #e5989b;
+            --bg-color: #fefae0;
+            --text-color: #4a4a4a;
+            --white: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Helvetica Neue", "PingFang TC", sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; }
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; display: block; }
+        ul { list-style: none; }
+
+        /* 導航 */
+        header { background: var(--white); padding: 1rem 5%; position: fixed; width: 100%; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: bold; color: var(--accent-color); }
+        .cart-btn { background: var(--accent-color); color: white; padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; position: relative; }
+        .cart-count { position: absolute; top: -5px; right: -5px; background: red; color: white; font-size: 12px; width: 18px; height: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
+
+        /* Hero */
+        .hero { height: 70vh; background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://images.unsplash.com/photo-1563729768-6af584667824?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; margin-top: 60px; }
+        .hero h1 { font-size: 3rem; margin-bottom: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .cta-button { background-color: var(--primary-color); color: white; padding: 1rem 2.5rem; border-radius: 30px; font-size: 1.2rem; cursor: pointer; border: none; transition: 0.3s; }
+        .cta-button:hover { transform: scale(1.05); }
+
+        /* 產品區 */
+        .products { padding: 4rem 10%; }
+        .section-title { text-align: center; font-size: 2rem; margin-bottom: 3rem; color: var(--primary-color); }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+        .product-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: transform 0.3s; display: flex; flex-direction: column; }
+        .product-card:hover { transform: translateY(-5px); }
+        .product-img { height: 200px; object-fit: cover; width: 100%; }
+        .product-info { padding: 1.5rem; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-title { font-size: 1.2rem; margin-bottom: 0.5rem; font-weight: bold; }
+        .product-price { color: var(--accent-color); font-size: 1.1rem; margin-bottom: 1rem; }
+        .add-btn { background-color: var(--text-color); color: white; padding: 0.5rem 1rem; border: none; border-radius: 5px; cursor: pointer; width: 100%; transition: 0.2s; }
+        .add-btn:hover { background-color: var(--accent-color); }
+
+        /* --- 購物車 Modal (彈出視窗) --- */
+        .cart-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: none; justify-content: center; align-items: center; }
+        .cart-modal { background: white; width: 90%; max-width: 500px; padding: 2rem; border-radius: 10px; max-height: 80vh; overflow-y: auto; position: relative; }
+        .cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
+        .close-cart { cursor: pointer; font-size: 1.5rem; }
+        .cart-items { margin-bottom: 1rem; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: #f9f9f9; border-radius: 5px; }
+        .cart-item-info { display: flex; flex-direction: column; }
+        .cart-total { font-size: 1.2rem; font-weight: bold; text-align: right; margin-top: 1rem; color: var(--accent-color); }
+        .checkout-btn { background-color: #00c300; /* LINE Green */ color: white; width: 100%; padding: 1rem; border: none; border-radius: 5px; margin-top: 1rem; cursor: pointer; font-size: 1rem; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .checkout-btn:hover { background-color: #00a000; }
+        .remove-item { color: red; cursor: pointer; margin-left: 10px; }
+
+        /* 頁尾 */
+        footer { background: var(--text-color); color: white; padding: 3rem 10%; text-align: center; }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Sweet Dreams</div>
+        <div class="cart-btn" onclick="toggleCart()">
+            <i class="fas fa-shopping-cart"></i> 購物車
+            <div class="cart-count" id="cart-count">0</div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>手工甜點，傳遞幸福</h1>
+        <p>今日下單，新鮮現做</p>
+        <button class="cta-button" onclick="document.getElementById('products').scrollIntoView({behavior: 'smooth'})">開始選購</button>
+    </section>
+
+    <section id="products" class="products">
+        <h2 class="section-title">熱銷甜點</h2>
+        <div class="product-grid" id="product-list">
+            </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Sweet Dreams 甜夢工坊</p>
+    </footer>
+
+    <div class="cart-modal-overlay" id="cart-overlay">
+        <div class="cart-modal">
+            <div class="cart-header">
+                <h2>您的購物清單</h2>
+                <span class="close-cart" onclick="toggleCart()">&times;</span>
+            </div>
+            <div id="cart-items-container" class="cart-items">
+                <p style="text-align:center; color:#888;">購物車是空的</p>
+            </div>
+            <div class="cart-total">總計: NT$ <span id="cart-total-price">0</span></div>
+            <button class="checkout-btn" onclick="checkout()">
+                <i class="fab fa-line"></i> 用 LINE 傳送訂單結帳
+            </button>
+            <p style="font-size:0.8rem; color:#888; margin-top:10px; text-align:center;">*點擊後將跳轉至 LINE 發送訂單訊息</p>
+        </div>
+    </div>
+
+    <script>
+        // 1. 商品資料庫 (您可以直接在這裡修改商品)
+        const products = [
+            { id: 1, name: "草莓鮮奶油蛋糕", price: 850, img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" },
+            { id: 2, name: "法式馬卡龍 (6入)", price: 480, img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" },
+            { id: 3, name: "巧克力布朗尼", price: 320, img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" },
+            { id: 4, name: "經典法式檸檬塔", price: 150, img: "https://images.unsplash.com/photo-1488477181946-6428a0291777?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" },
+            { id: 5, name: "手工餅乾禮盒", price: 600, img: "https://images.unsplash.com/photo-1558961363-fa9fdb82995d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" }
+        ];
+
+        // 2. 初始化購物車 (從 LocalStorage 讀取)
+        let cart = JSON.parse(localStorage.getItem('myDessertCart')) || [];
+
+        // 3. 渲染產品列表
+        const productList = document.getElementById('product-list');
+        products.forEach(product => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <img src="${product.img}" alt="${product.name}" class="product-img">
+                <div class="product-info">
+                    <div class="product-title">${product.name}</div>
+                    <div class="product-price">NT$ ${product.price}</div>
+                    <button class="add-btn" onclick="addToCart(${product.id})">加入購物車</button>
+                </div>
+            `;
+            productList.appendChild(card);
+        });
+
+        // 更新購物車圖標數字
+        function updateCartCount() {
+            document.getElementById('cart-count').innerText = cart.length;
+        }
+        updateCartCount();
+
+        // 4. 加入購物車功能
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            cart.push(product);
+            localStorage.setItem('myDessertCart', JSON.stringify(cart)); // 存入瀏覽器
+            updateCartCount();
+            alert(`已將「${product.name}」加入購物車！`);
+        }
+
+        // 5. 開關購物車視窗
+        function toggleCart() {
+            const overlay = document.getElementById('cart-overlay');
+            if (overlay.style.display === 'flex') {
+                overlay.style.display = 'none';
+            } else {
+                renderCartItems();
+                overlay.style.display = 'flex';
+            }
+        }
+
+        // 6. 渲染購物車內容
+        function renderCartItems() {
+            const container = document.getElementById('cart-items-container');
+            const totalEl = document.getElementById('cart-total-price');
+            container.innerHTML = '';
+            
+            if (cart.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#888;">購物車是空的</p>';
+                totalEl.innerText = '0';
+                return;
+            }
+
+            let total = 0;
+            // 這裡簡單列出所有商品，如果需要合併相同商品數量，邏輯會再複雜一點
+            cart.forEach((item, index) => {
+                total += item.price;
+                const div = document.createElement('div');
+                div.className = 'cart-item';
+                div.innerHTML = `
+                    <div class="cart-item-info">
+                        <strong>${item.name}</strong>
+                        <small>NT$ ${item.price}</small>
+                    </div>
+                    <i class="fas fa-trash remove-item" onclick="removeFromCart(${index})"></i>
+                `;
+                container.appendChild(div);
+            });
+            totalEl.innerText = total;
+        }
+
+        // 7. 移除商品
+        function removeFromCart(index) {
+            cart.splice(index, 1); // 刪除指定項目
+            localStorage.setItem('myDessertCart', JSON.stringify(cart));
+            updateCartCount();
+            renderCartItems(); // 重新渲染
+        }
+
+        // 8. 結帳功能 (核心：生成 LINE 訊息)
+        function checkout() {
+            if (cart.length === 0) {
+                alert('購物車是空的喔！');
+                return;
+            }
+
+            // 整理訂單內容
+            let message = "您好，我想訂購以下甜點：\n";
+            let total = 0;
+            
+            // 簡單統計數量
+            const counts = {};
+            cart.forEach(item => {
+                counts[item.name] = (counts[item.name] || 0) + 1;
+                total += item.price;
+            });
+
+            for (const [name, count] of Object.entries(counts)) {
+                message += `- ${name} x ${count}\n`;
+            }
+            
+            message += `\n總金額：NT$ ${total}`;
+            message += `\n\n(請在此留下您的收件人姓名、電話與地址)`;
+
+            // 這裡請填入您的 LINE ID 或直接使用 LINE 官方帳號連結
+            // 使用 LINE URL Scheme 分享文字
+            const lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(message)}`;
+            
+            // 開啟新視窗跳轉到 LINE
+            window.open(lineUrl, '_blank');
+            
+            // (選擇性) 清空購物車
+            // cart = [];
+            // localStorage.setItem('myDessertCart', JSON.stringify(cart));
+            // updateCartCount();
+            // toggleCart();
+        }
+    </script>
+</body>
+</html>
